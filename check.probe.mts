@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
-import { PrismaMariaDb } from "@prisma/adapter-mariadb";
-const db = new PrismaClient({ adapter: new PrismaMariaDb(process.env.DATABASE_URL!) });
+import { PrismaPg } from "@prisma/adapter-pg";
+const db = new PrismaClient({ adapter: new PrismaPg(process.env.DATABASE_URL!) });
 const r = await db.tradeRequest.findUnique({
   where: { id: 5 },
   include: { items: { include: { cap: true, offeredCap: true } } },

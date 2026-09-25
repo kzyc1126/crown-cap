@@ -27,7 +27,7 @@ host 127.0.0.1 · port 3306 · user root
 The connection string lives in `.env` (git-ignored):
 
 ```
-DATABASE_URL="mysql://root:root@127.0.0.1:3306/crowncap"
+DATABASE_URL="postgresql://postgres:postgres@127.0.0.1:5432/crowncap"
 ```
 
 In MySQL Workbench this is one connection with many schemas — `crowncap` sits

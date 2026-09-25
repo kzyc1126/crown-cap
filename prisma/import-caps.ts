@@ -17,7 +17,7 @@ import { mkdirSync, readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import os from "node:os";
 import { PrismaClient } from "@prisma/client";
-import { PrismaMariaDb } from "@prisma/adapter-mariadb";
+import { PrismaPg } from "@prisma/adapter-pg";
 import "dotenv/config";
 import { resolveCountry } from "../src/lib/countries";
 
@@ -125,7 +125,7 @@ async function main() {
   );
 }
 
-const adapter = new PrismaMariaDb(process.env.DATABASE_URL as string);
+const adapter = new PrismaPg(process.env.DATABASE_URL as string);
 const prisma = new PrismaClient({ adapter });
 
 main()

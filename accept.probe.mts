@@ -1,8 +1,8 @@
 import { PrismaClient } from "@prisma/client";
-import { PrismaMariaDb } from "@prisma/adapter-mariadb";
+import { PrismaPg } from "@prisma/adapter-pg";
 import { acceptTradeRequest } from "./src/server/actions";
 
-const db = new PrismaClient({ adapter: new PrismaMariaDb(process.env.DATABASE_URL!) });
+const db = new PrismaClient({ adapter: new PrismaPg(process.env.DATABASE_URL!) });
 const snap = async (label: string) => {
   const want = await db.cap.findUnique({ where: { id: 1234 } });
   const wish = await db.cap.findUnique({ where: { id: 2368 } });

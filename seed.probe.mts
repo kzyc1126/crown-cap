@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
-import { PrismaMariaDb } from "@prisma/adapter-mariadb";
-const db = new PrismaClient({ adapter: new PrismaMariaDb(process.env.DATABASE_URL!) });
+import { PrismaPg } from "@prisma/adapter-pg";
+const db = new PrismaClient({ adapter: new PrismaPg(process.env.DATABASE_URL!) });
 
 const want = (await db.cap.findFirst({ where: { wish: false }, orderBy: { id: "asc" } }))!;
 await db.cap.update({ where: { id: want.id }, data: { copies: 5 } });

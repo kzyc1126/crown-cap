@@ -97,7 +97,7 @@ export type CollectionStats = {
 
 /**
  * Figures for the home page, read from the `collection_stats` SQL view
- * (see prisma/migrations/*_derive_stats). Counting happens in MySQL, so the
+ * (see prisma/migrations/*_collection_stats_view). Counting happens in the database, so the
  * numbers always match the rows — no counters to keep in sync.
  */
 export async function getCollectionStats(): Promise<CollectionStats> {

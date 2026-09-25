@@ -629,10 +629,14 @@ export async function acceptTradeRequest(data: FormData): Promise<void> {
 
       if (!item.offerName || !item.offerCountry) continue;
 
-      /* MySQL compares these case-insensitively under the default collation, so
-         "Bintang" and "bintang" are the same cap here. */
+      /* Match case-insensitively so "Bintang" and "bintang" are the same cap
+         here. MySQL did this under its default collation; Postgres compares
+         case-sensitively, so the intent is spelled out with `mode`. */
       const existing = await tx.cap.findFirst({
-        where: { name: item.offerName, country: item.offerCountry },
+        where: {
+          name: { equals: item.offerName, mode: "insensitive" },
+          country: { equals: item.offerCountry, mode: "insensitive" },
+        },
       });
 
       if (existing) {

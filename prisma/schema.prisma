@@ -1,4 +1,4 @@
-// Crown cap catalogue — MySQL schema (database: crowncap).
+// Crown cap catalogue — PostgreSQL schema.
 // Run `npx prisma migrate dev` after editing this file.
 
 generator client {
@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
 }
 
 /// One crown cap — either owned (wish = false) or wanted (wish = true).

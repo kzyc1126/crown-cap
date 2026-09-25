@@ -33,7 +33,7 @@ export default async function AdminSettingsPage() {
         <div>
           <h2 className="text-[28px]">Live figures</h2>
           <p className="dim mt-2 max-w-[62ch] text-[15px] leading-relaxed">
-            Counted by the <code>collection_stats</code> view in MySQL, so they move
+            Counted by the <code>collection_stats</code> view in the database, so they move
             on their own as caps are added, imported, edited or deleted — nothing
             here to keep up to date. The first four are the tiles on the home page.
           </p>
