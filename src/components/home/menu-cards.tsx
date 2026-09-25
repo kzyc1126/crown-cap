@@ -11,13 +11,20 @@ const cards = [
   },
   {
     index: "02",
+    label: "Countries",
+    desc: "Every country in the collection, with a cap from each.",
+    cta: "Explore",
+    href: "/countries",
+  },
+  {
+    index: "03",
     label: "My wishlist",
     desc: "The caps still missing. Reference only — not for trade.",
     cta: "See the wants",
     href: "/wishlist",
   },
   {
-    index: "03",
+    index: "04",
     label: "Trade with me",
     desc: "Mark my duplicates, offer yours, send one request.",
     cta: "Start a trade",
@@ -28,7 +35,7 @@ const cards = [
 export function MenuCards() {
   return (
     <section className="wrap pt-14">
-      <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-7 sm:grid-cols-2">
         {cards.map((card) => (
           <Frame key={card.index} className="transition-colors hover:border-accent-mid">
             <Link href={card.href} className="block p-6 text-fg hover:text-fg">
