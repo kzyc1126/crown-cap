@@ -1,0 +1,125 @@
+// Crown cap catalogue — MySQL schema (database: crowncap).
+// Run `npx prisma migrate dev` after editing this file.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+/// One crown cap — either owned (wish = false) or wanted (wish = true).
+model Cap {
+  id           Int      @id @default(autoincrement())
+  ref          String   @unique @db.VarChar(32)
+  name         String   @db.VarChar(160)
+  brewery      String   @db.VarChar(160)
+  country      String   @db.VarChar(80)
+  /// ISO 3166-1 alpha-2, or a former-state code (SU, DD, CS, YU); null when unplaceable
+  countryCode  String?  @db.VarChar(4)
+  liner        String   @db.VarChar(60)
+  /// what was bottled under it: Beer, Soda/soft drink, Water…
+  product      String?  @db.VarChar(60)
+  /// Bottle closure, Promotion cap, Factory cap…
+  capType      String?  @db.VarChar(40)
+  /// null when the cap is undated
+  year         Int?
+  /// copies owned; more than one means there are spares to trade
+  copies       Int      @default(1)
+  /// true = wishlist entry, not owned yet and not tradable
+  wish         Boolean  @default(false)
+  /// path under /public, e.g. /caps/bintang.jpg
+  image        String?  @db.VarChar(255)
+  /// palette index for the fallback initials disc
+  paletteIndex Int      @default(0)
+  notes        String?  @db.Text
+  /// maker marks pressed into the skirt, comma separated
+  factorySigns String?  @db.VarChar(120)
+  /// id on crowncaps.info this row was imported from
+  sourceId     String?  @unique @db.VarChar(16)
+  sourceUrl    String?  @db.VarChar(255)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  requestedIn TradeRequestItem[] @relation("RequestedCap")
+  offeredFor  TradeRequestItem[] @relation("OfferedCap")
+
+  @@index([wish])
+  @@index([country])
+  @@index([countryCode])
+  @@index([brewery])
+  @@map("caps")
+}
+
+/// One submission of the "Trade with me" form.
+/// Accepting one is what actually moves caps between the two collections —
+/// see `acceptTradeRequest` in src/server/actions.ts.
+model TradeRequest {
+  id        Int                @id @default(autoincrement())
+  name      String             @db.VarChar(120)
+  contact   String             @db.VarChar(160)
+  /// new | accepted | declined
+  status    String             @default("new") @db.VarChar(20)
+  createdAt DateTime           @default(now())
+  items     TradeRequestItem[]
+
+  @@index([status])
+  @@map("trade_requests")
+}
+
+/// One line of a trade request: a cap they want, and what they offer for it.
+model TradeRequestItem {
+  id           Int          @id @default(autoincrement())
+  requestId    Int
+  request      TradeRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  capId        Int
+  cap          Cap          @relation("RequestedCap", fields: [capId], references: [id], onDelete: Cascade)
+  /// set when they offer a cap from the wishlist
+  offeredCapId Int?
+  offeredCap   Cap?         @relation("OfferedCap", fields: [offeredCapId], references: [id], onDelete: SetNull)
+  /// set when they choose "Other": anything they want to add about the cap
+  offerNote    String?      @db.Text
+  /// uploaded photo of the offered cap, path under /public
+  offerImage   String?      @db.VarChar(255)
+
+  /*
+   * The offered cap described field by field, so accepting can write a Cap row
+   * without anything being retyped. All null when a wishlist cap was chosen
+   * instead — offeredCapId already says which. Types mirror Cap exactly so the
+   * values transfer without truncation.
+   */
+  offerName         String? @db.VarChar(160)
+  offerBrewery      String? @db.VarChar(160)
+  offerCountry      String? @db.VarChar(80)
+  offerLiner        String? @db.VarChar(60)
+  offerYear         Int?
+  offerProduct      String? @db.VarChar(60)
+  offerCapType      String? @db.VarChar(40)
+  offerFactorySigns String? @db.VarChar(120)
+
+  @@index([requestId])
+  @@index([capId])
+  @@map("trade_request_items")
+}
+
+/// Single row (id = 1) holding what cannot be derived from the caps table.
+/// The figures on the home page come from the `collection_stats` SQL view.
+model SiteSetting {
+  id        Int      @id @default(1)
+  ownerName String   @db.VarChar(120)
+  startYear Int
+  updatedAt DateTime @updatedAt
+
+  @@map("site_settings")
+}
+
+/// Slides of the home page slideshow.
+model GallerySlide {
+  id       Int     @id @default(autoincrement())
+  caption  String  @db.VarChar(160)
+  image    String? @db.VarChar(255)
+  position Int     @default(0)
+
+  @@map("gallery_slides")
+}
