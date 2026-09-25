@@ -2,7 +2,7 @@ import { Hero, LatestEntries, MenuCards, StatsRow } from "@/components/home";
 import {
   getCollectionStats,
   getGallerySlides,
-  getOwnedCaps,
+  getLatestOwnedCaps,
   getSiteSettings,
 } from "@/server/queries";
 
@@ -15,7 +15,7 @@ export default async function HomePage() {
     getSiteSettings(),
     getCollectionStats(),
     getGallerySlides(),
-    getOwnedCaps(),
+    getLatestOwnedCaps(6),
   ]);
 
   return (
