@@ -10,6 +10,14 @@ const nextConfig: NextConfig = {
   outputFileTracingExcludes: {
     "*": ["public/**"],
   },
+  // Uploaded photos live on Vercel Blob; next/image only loads remote hosts it
+  // is told about, so allow the public Blob domain. Local /caps/*.webp are
+  // relative paths and need no entry here.
+  images: {
+    remotePatterns: [
+      { protocol: "https", hostname: "*.public.blob.vercel-storage.com" },
+    ],
+  },
   experimental: {
     serverActions: {
       /**
