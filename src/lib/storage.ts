@@ -23,6 +23,9 @@ function filenameFor(file: File) {
 
 async function storeLocally(file: File, folder: ImageFolder, bytes: Buffer) {
   const name = filenameFor(file);
+  // Local dev only (IMAGE_STORAGE=local); the deployed site uploads to Vercel
+  // Blob. `public/**` is excluded from function file-tracing in next.config.ts
+  // so this write path doesn't pull all of /public into the bundle.
   const directory = path.join(process.cwd(), "public", folder);
 
   await mkdir(directory, { recursive: true });

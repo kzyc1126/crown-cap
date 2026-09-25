@@ -3,6 +3,13 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   // Batasi root ke folder project ini supaya lockfile di luar tidak ikut terbaca
   turbopack: { root: __dirname },
+  // src/lib/storage.ts writes uploads under /public in local dev, which makes
+  // the bundler trace all 45k files in /public into the serverless functions.
+  // Those files are served as static assets by the platform, never from a
+  // function, so exclude them from function file-tracing to keep bundles small.
+  outputFileTracingExcludes: {
+    "*": ["public/**"],
+  },
   experimental: {
     serverActions: {
       /**
