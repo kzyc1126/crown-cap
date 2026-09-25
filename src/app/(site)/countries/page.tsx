@@ -7,6 +7,9 @@ import { getCountryTally } from "@/server/queries";
 
 export const metadata: Metadata = { title: "Countries" };
 
+// Static (ISR), refreshed every 10 minutes — served from the CDN, not a function.
+export const revalidate = 600;
+
 export default async function CountriesPage() {
   const rows = buildCountryRows(await getCountryTally());
   const totals = countryTotals(rows);
