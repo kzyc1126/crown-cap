@@ -14,6 +14,7 @@ export type CapBrowserState = {
   countries: string[];
   products: string[];
   liners: string[];
+  tradable: boolean;
   sort: SortKey;
   page: number;
 };
@@ -100,7 +101,10 @@ export function CapBrowser({
   const totalPages = Math.max(1, Math.ceil(total / perPage));
   const current = Math.min(Math.max(1, state.page), totalPages);
   const activeCount =
-    state.countries.length + state.products.length + state.liners.length;
+    state.countries.length +
+    state.products.length +
+    state.liners.length +
+    (state.tradable ? 1 : 0);
 
   return (
     <div className="wrap flex-1 pb-18 pt-11">
@@ -179,6 +183,20 @@ export function CapBrowser({
               ))}
             </select>
           </Field>
+
+          {allowTrade ? (
+            <ChoiceChip
+              active={state.tradable}
+              onClick={() =>
+                commit((params) => {
+                  if (state.tradable) params.delete("trade");
+                  else params.set("trade", "1");
+                })
+              }
+            >
+              Available for trade
+            </ChoiceChip>
+          ) : null}
         </div>
 
         <div className="mt-4 flex flex-wrap items-center gap-4">
@@ -195,6 +213,7 @@ export function CapBrowser({
                   params.delete("countries");
                   params.delete("products");
                   params.delete("liners");
+                  params.delete("trade");
                 })
               }
             >

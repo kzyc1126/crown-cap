@@ -37,6 +37,7 @@ export default async function CollectionPage({ searchParams }: PageProps<"/colle
     countries: many(params.countries),
     products: many(params.products),
     liners: many(params.liners),
+    tradable: first(params.trade) === "1",
     sort: asSort(first(params.sort)),
     page: Number(first(params.page)) || 1,
   };

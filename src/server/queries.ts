@@ -41,6 +41,8 @@ export type CapQuery = {
   countries?: string[];
   products?: string[];
   liners?: string[];
+  /** only caps with a spare to give away (owned, copies > 1) */
+  tradable?: boolean;
   sort?: SortKey;
   page?: number;
   perPage?: number;
@@ -82,6 +84,9 @@ function capWhere(
   const and: Prisma.CapWhereInput[] = [base];
   const search = searchClause(query.q);
   if (search) and.push(search);
+  // "Available for trade" is a global narrowing like search — it applies to the
+  // results and to every facet count, so it lives outside the skip logic.
+  if (query.tradable) and.push({ copies: { gt: 1 } });
   if (skip !== "countries" && query.countries?.length) {
     and.push({ country: { in: query.countries } });
   }

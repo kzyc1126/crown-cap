@@ -22,6 +22,7 @@ export default async function WishlistPage({ searchParams }: PageProps<"/wishlis
     countries: many(params.countries),
     products: many(params.products),
     liners: many(params.liners),
+    tradable: false,
     sort: asSort(first(params.sort)),
     page: Number(first(params.page)) || 1,
   };
