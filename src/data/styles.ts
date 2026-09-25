@@ -10,6 +10,7 @@ export const styleOptions: Array<{
   { id: "verdigris", number: "01", label: "Verdigris", note: "Teal on warm paper" },
   { id: "plate", number: "02", label: "Plate", note: "Copper on dark ink" },
   { id: "industry", number: "03", label: "Industry", note: "Steel blue wireframe" },
+  { id: "lagoon", number: "04", label: "Lagoon", note: "Deep teal, turquoise glow" },
 ];
 
 export const defaultStyle: StyleId = "verdigris";
@@ -47,5 +48,15 @@ export const capPalettes: Record<StyleId, Array<[string, string]>> = {
     ["#1d2d3d", "#eef6ff"],
     ["#94bce3", "#1d2d3d"],
     ["#2b2b2d", "#eef6ff"],
+  ],
+  lagoon: [
+    ["#3fd1c4", "#0b2b2c"],
+    ["#12807a", "#e6f4f1"],
+    ["#7fe3da", "#0b2b2c"],
+    ["#0e3435", "#e6f4f1"],
+    ["#e3c24a", "#0b2b2c"],
+    ["#2c4a78", "#e6f4f1"],
+    ["#e6f4f1", "#0b2b2c"],
+    ["#6a3e8f", "#e6f4f1"],
   ],
 };

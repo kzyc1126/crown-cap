@@ -96,6 +96,35 @@
   --corner-show: block;
 }
 
+[data-style="lagoon"] {
+  --bg: #0b2b2c;
+  --surface: #0e3435;
+  --fg: #e6f4f1;
+  --line: rgba(230, 244, 241, 0.16);
+  --accent: #3fd1c4;
+  --accent-soft: #0e3a39;
+  --accent-mid: #7fe3da;
+  --accent-strong: #7fe3da;
+  --accent-deep: #0a2726;
+  --accent-ink: #0b2b2c;
+
+  --font-display: var(--font-dm-serif), Georgia, serif;
+  --font-body: var(--font-dm-sans), system-ui, sans-serif;
+  --font-over: var(--font-dm-sans), system-ui, sans-serif;
+  --over-size: 11px;
+  --over-track: 0.24em;
+  --over-weight: 500;
+  --display-italic: normal;
+
+  --radius: 12px;
+  --tile-border: 1px solid var(--line);
+  --grid-gap: 26px;
+  --grid-min: 200px;
+  --body-size: 15px;
+  --ring: repeating-conic-gradient(from 0deg, rgba(230, 244, 241, 0.4) 0 2.6deg, rgba(230, 244, 241, 0.06) 2.6deg 8deg);
+  --corner-show: none;
+}
+
 @theme inline {
   --color-bg: var(--bg);
   --color-surface: var(--surface);
@@ -115,7 +144,8 @@
   html {
     color-scheme: light;
   }
-  [data-style="plate"] {
+  [data-style="plate"],
+  [data-style="lagoon"] {
     color-scheme: dark;
   }
   body {
@@ -137,7 +167,11 @@
   [data-style="plate"] h1,
   [data-style="plate"] h2,
   [data-style="plate"] h3,
-  [data-style="plate"] h4 {
+  [data-style="plate"] h4,
+  [data-style="lagoon"] h1,
+  [data-style="lagoon"] h2,
+  [data-style="lagoon"] h3,
+  [data-style="lagoon"] h4 {
     font-weight: 400;
     line-height: 0.95;
     letter-spacing: -0.015em;

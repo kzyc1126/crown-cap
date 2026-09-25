@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import {
   Barlow,
   Barlow_Condensed,
+  DM_Sans,
+  DM_Serif_Display,
   IBM_Plex_Mono,
   Instrument_Serif,
   Spectral,
@@ -34,6 +36,18 @@ const plexMono = IBM_Plex_Mono({
   subsets: ["latin"],
   weight: ["400"],
 });
+// Lagoon style: soft display serif + calm sans body.
+const dmSerif = DM_Serif_Display({
+  variable: "--font-dm-serif",
+  subsets: ["latin"],
+  weight: ["400"],
+  style: ["normal", "italic"],
+});
+const dmSans = DM_Sans({
+  variable: "--font-dm-sans",
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+});
 
 export const metadata: Metadata = {
   title: {
@@ -51,7 +65,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       /* data-style is deliberately not rendered here: StyleScript sets it
          before paint and React must not overwrite it during hydration. */
       suppressHydrationWarning
-      className={`${barlow.variable} ${barlowCondensed.variable} ${instrumentSerif.variable} ${spectral.variable} ${plexMono.variable} h-full`}
+      className={`${barlow.variable} ${barlowCondensed.variable} ${instrumentSerif.variable} ${spectral.variable} ${plexMono.variable} ${dmSerif.variable} ${dmSans.variable} h-full`}
     >
       <head>
         <StyleScript />
