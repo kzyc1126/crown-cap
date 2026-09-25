@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { AdminNav } from "@/components/admin";
 import { getAdminStats } from "@/server/queries";
+import { logout } from "@/app/login/actions";
 
 export const metadata = { title: "Admin" };
 
@@ -20,9 +21,16 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
             </span>
             <h1 className="mt-1 text-[30px]">Catalogue manager</h1>
           </div>
-          <Link href="/" className="btn quiet ml-auto">
-            View site
-          </Link>
+          <div className="ml-auto flex items-center gap-2.5">
+            <Link href="/" className="btn quiet">
+              View site
+            </Link>
+            <form action={logout}>
+              <button type="submit" className="btn quiet">
+                Sign out
+              </button>
+            </form>
+          </div>
         </div>
         <div className="wrap pb-5">
           <AdminNav newRequests={stats.newRequests} />

@@ -1,18 +1,18 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { ADMIN_COOKIE, adminToken } from "@/lib/admin-auth";
 
 /**
- * Temporary gate for the admin area: HTTP Basic Auth against ADMIN_USER /
- * ADMIN_PASSWORD. It runs before every /admin request — pages and the POST
- * server actions they submit to alike — so the whole catalogue manager is
- * behind one login. Meant as a stopgap until "Sign in with Apple / Google"
- * replaces it.
+ * Guards the admin area with a session cookie set by the /login page. Every
+ * /admin request — pages and the POST server actions they submit to — must
+ * carry a valid cookie, or it is redirected to /login. Meant as a stopgap until
+ * "Sign in with Apple / Google" replaces it.
  *
  * Fails closed in production: if the credentials are not configured, admin is
  * blocked rather than left open. In development it lets requests through so the
  * admin is usable without setting anything.
  */
-export function proxy(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const user = process.env.ADMIN_USER;
   const pass = process.env.ADMIN_PASSWORD;
 
@@ -24,22 +24,17 @@ export function proxy(request: NextRequest) {
     );
   }
 
-  const header = request.headers.get("authorization");
-  if (header?.startsWith("Basic ")) {
-    const decoded = atob(header.slice(6));
-    const separator = decoded.indexOf(":");
-    const givenUser = decoded.slice(0, separator);
-    const givenPass = decoded.slice(separator + 1);
-    // Length-independent-ish compare; for one personal admin this is enough.
-    if (givenUser === user && givenPass === pass) {
-      return NextResponse.next();
-    }
+  const expected = await adminToken();
+  const cookie = request.cookies.get(ADMIN_COOKIE)?.value;
+  if (expected && cookie === expected) {
+    return NextResponse.next();
   }
 
-  return new NextResponse("Authentication required.", {
-    status: 401,
-    headers: { "WWW-Authenticate": 'Basic realm="Crown Caps admin", charset="UTF-8"' },
-  });
+  const url = request.nextUrl.clone();
+  url.pathname = "/login";
+  url.search = "";
+  url.searchParams.set("from", request.nextUrl.pathname);
+  return NextResponse.redirect(url);
 }
 
 export const config = {
