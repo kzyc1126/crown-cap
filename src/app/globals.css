@@ -4,7 +4,7 @@
    THREE STYLES — chosen through the data-style attribute on <html>.
    1. verdigris : teal on warm paper  (default)
    2. plate     : copper on dark ink, serif
-   3. industry  : steel blue wireframe on a light grey ground
+   3. lagoon    : deep teal, turquoise glow, soft serif
    Every component reads these tokens only — no hard-coded colours.
    ===================================================================== */
 
@@ -65,35 +65,6 @@
   --body-size: 15px;
   --ring: repeating-conic-gradient(from 0deg, rgba(239, 231, 216, 0.42) 0 2.6deg, rgba(239, 231, 216, 0.06) 2.6deg 8deg);
   --corner-show: none;
-}
-
-[data-style="industry"] {
-  --bg: #f2f2f3;
-  --surface: #e9e9ea;
-  --fg: #1d1f20;
-  --line: color-mix(in srgb, #1d1f20 16%, transparent);
-  --accent: #5980a6;
-  --accent-soft: #eef6ff;
-  --accent-mid: #94bce3;
-  --accent-strong: #416180;
-  --accent-deep: #1d2d3d;
-  --accent-ink: #ffffff;
-
-  --font-display: var(--font-barlow-condensed), system-ui, sans-serif;
-  --font-body: var(--font-barlow), system-ui, sans-serif;
-  --font-over: var(--font-barlow-condensed), system-ui, sans-serif;
-  --over-size: 12px;
-  --over-track: 0.18em;
-  --over-weight: 600;
-  --display-italic: normal;
-
-  --radius: 4px;
-  --tile-border: 1px solid var(--line);
-  --grid-gap: 26px;
-  --grid-min: 176px;
-  --body-size: 15px;
-  --ring: repeating-conic-gradient(from 0deg, rgba(29, 31, 32, 0.65) 0 3deg, transparent 3deg 9deg);
-  --corner-show: block;
 }
 
 [data-style="lagoon"] {
@@ -472,8 +443,7 @@
 /* Phones: slimmer gutter and tighter cap grid (Plate keeps its 1px hairlines). */
 @media (max-width: 639px) {
   :root:not([data-style]),
-  [data-style="verdigris"],
-  [data-style="industry"] {
+  [data-style="verdigris"] {
     --grid-gap: 12px;
   }
   .wrap {

@@ -1,6 +1,6 @@
 export type { Cap, GallerySlide, SiteSetting, TradeRequest } from "@prisma/client";
 
-export type StyleId = "verdigris" | "plate" | "industry" | "lagoon";
+export type StyleId = "verdigris" | "plate" | "lagoon";
 
 export type SortKey = "newest" | "oldest" | "az" | "za";
 
