@@ -111,6 +111,22 @@ export async function deleteCap(data: FormData) {
   revalidatePath("/admin/caps");
 }
 
+/** Replace one cap's photo straight from the admin table row. */
+export async function updateCapImage(data: FormData): Promise<ActionResult> {
+  const id = Number(data.get("id"));
+  if (!id) return { ok: false, message: "Missing cap." };
+  try {
+    const uploaded = await storeImage(data.get("photo") as File | null, "caps");
+    if (!uploaded) return { ok: false, message: "No photo chosen." };
+    await prisma.cap.update({ where: { id }, data: { image: uploaded } });
+  } catch (error) {
+    return { ok: false, message: (error as Error).message };
+  }
+  refreshSite();
+  revalidatePath("/admin/caps");
+  return { ok: true, message: "Photo updated." };
+}
+
 /** One row of the admin table as edited in the browser. */
 export type CapRowInput = {
   id: number;

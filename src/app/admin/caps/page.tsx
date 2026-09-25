@@ -39,6 +39,7 @@ export default async function AdminCapsPage({
       year: true,
       copies: true,
       wish: true,
+      image: true,
     },
   });
 

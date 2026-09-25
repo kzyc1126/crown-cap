@@ -1,12 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { memo, useActionState, useCallback, useEffect, useState } from "react";
-import { type ActionResult, type CapRowInput, deleteCap, saveCapRows } from "@/server/actions";
+import { memo, useActionState, useCallback, useEffect, useRef, useState } from "react";
+import {
+  type ActionResult,
+  type CapRowInput,
+  deleteCap,
+  saveCapRows,
+  updateCapImage,
+} from "@/server/actions";
 import { ConfirmButton } from "./confirm-button";
 
 /** The columns the admin table shows — a slice of Cap that survives the wire. */
-export type CapRow = CapRowInput & { ref: string };
+export type CapRow = CapRowInput & { ref: string; image: string | null };
 
 type Edit = Partial<Omit<CapRow, "id" | "ref">>;
 
@@ -123,6 +129,7 @@ export function CapTable({
       <div className="border border-line">
         <table className="table edit-table">
           <colgroup>
+            <col style={{ width: 56 }} />
             <col style={{ width: 88 }} />
             <col />
             <col />
@@ -135,6 +142,7 @@ export function CapTable({
           </colgroup>
           <thead>
             <tr>
+              <th>Photo</th>
               <th>Ref</th>
               <th>Name</th>
               <th>Product</th>
@@ -187,6 +195,9 @@ const Row = memo(function Row({
 
   return (
     <tr style={dirty ? { background: "var(--accent-soft)" } : undefined}>
+      <td>
+        <ImageCell cap={cap} />
+      </td>
       <td className="ovr dimmer whitespace-nowrap">
         <Link href={`/admin/caps/${cap.id}`} title="Open the full edit form">
           {cap.ref}
@@ -270,6 +281,66 @@ const Row = memo(function Row({
     </tr>
   );
 });
+
+/** Thumbnail plus one-click photo replace, straight from the table row. */
+function ImageCell({ cap }: { cap: CapRow }) {
+  const formRef = useRef<HTMLFormElement>(null);
+  const [state, action, pending] = useActionState<ActionResult | null, FormData>(
+    (_prev, data) => updateCapImage(data),
+    null,
+  );
+  const failed = state !== null && !state.ok;
+
+  return (
+    <form ref={formRef} action={action} className="flex items-center justify-center">
+      <input type="hidden" name="id" value={cap.id} />
+      <label
+        className="cursor-pointer"
+        title={failed ? state.message : cap.image ? "Change photo" : "Upload a photo"}
+        style={{ opacity: pending ? 0.5 : 1, display: "block" }}
+      >
+        {cap.image ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={cap.image}
+            alt=""
+            style={{
+              width: 40,
+              height: 40,
+              objectFit: "contain",
+              background: "var(--surface)",
+              borderRadius: 8,
+              outline: failed ? "1px solid var(--accent-strong)" : "none",
+            }}
+          />
+        ) : (
+          <span
+            className="ovr dimmer"
+            style={{
+              display: "grid",
+              placeItems: "center",
+              width: 40,
+              height: 40,
+              border: `1px dashed ${failed ? "var(--accent-strong)" : "var(--line)"}`,
+              borderRadius: 8,
+            }}
+          >
+            +
+          </span>
+        )}
+        <input
+          type="file"
+          name="photo"
+          accept="image/*"
+          hidden
+          onChange={(event) => {
+            if (event.target.files?.length) formRef.current?.requestSubmit();
+          }}
+        />
+      </label>
+    </form>
+  );
+}
 
 /**
  * A select that lists only its current value until it is opened. Hundreds of
