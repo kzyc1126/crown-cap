@@ -165,6 +165,89 @@ export async function getCapPage(base: Prisma.CapWhereInput, query: CapQuery) {
   return { caps, total, grandTotal, page, perPage, facets };
 }
 
+export const ADMIN_PER_PAGE = 100;
+
+export type AdminCapQuery = {
+  kind?: "all" | "collection" | "wishlist";
+  q?: string;
+  countries?: string[];
+  products?: string[];
+  liners?: string[];
+  tradable?: boolean;
+  page?: number;
+};
+
+/** Like the collection search but for the admin table: also matches the ref,
+ *  spans both lists, and returns the editable columns plus the photo. */
+export async function getAdminCapPage(query: AdminCapQuery) {
+  const kind = query.kind ?? "all";
+  const base: Prisma.CapWhereInput = kind === "all" ? {} : { wish: kind === "wishlist" };
+  const perPage = ADMIN_PER_PAGE;
+  const page = Math.max(1, query.page ?? 1);
+
+  const term = query.q?.trim();
+  const search: Prisma.CapWhereInput | null = term
+    ? {
+        OR: [
+          { name: { contains: term, mode: "insensitive" } },
+          { brewery: { contains: term, mode: "insensitive" } },
+          { country: { contains: term, mode: "insensitive" } },
+          { ref: { contains: term, mode: "insensitive" } },
+        ],
+      }
+    : null;
+
+  const build = (skip?: "countries" | "products" | "liners"): Prisma.CapWhereInput => {
+    const and: Prisma.CapWhereInput[] = [base];
+    if (search) and.push(search);
+    if (query.tradable) and.push({ copies: { gt: 1 } });
+    if (skip !== "countries" && query.countries?.length) and.push({ country: { in: query.countries } });
+    if (skip !== "products") {
+      const products = productsClause(query.products);
+      if (products) and.push(products);
+    }
+    if (skip !== "liners" && query.liners?.length) and.push({ liner: { in: query.liners } });
+    return { AND: and };
+  };
+
+  const where = build();
+  const [grandTotal, total, caps, countryRows, productRows, linerRows] = await Promise.all([
+    prisma.cap.count({ where: base }),
+    prisma.cap.count({ where }),
+    prisma.cap.findMany({
+      where,
+      orderBy: [{ wish: "asc" }, { id: "asc" }],
+      skip: (page - 1) * perPage,
+      take: perPage,
+      select: {
+        id: true,
+        ref: true,
+        name: true,
+        brewery: true,
+        country: true,
+        liner: true,
+        year: true,
+        copies: true,
+        wish: true,
+        image: true,
+      },
+    }),
+    prisma.cap.groupBy({ by: ["country"], where: build("countries"), _count: { _all: true } }),
+    prisma.cap.groupBy({ by: ["product"], where: build("products"), _count: { _all: true } }),
+    prisma.cap.groupBy({ by: ["liner"], where: build("liners"), _count: { _all: true } }),
+  ]);
+
+  const facets = {
+    countries: countryRows.map((r) => ({ value: r.country, count: r._count._all })).sort(byAlpha),
+    products: productRows
+      .map((r) => ({ value: r.product ?? UNSPECIFIED_PRODUCT, count: r._count._all }))
+      .sort(byCount),
+    liners: linerRows.map((r) => ({ value: r.liner, count: r._count._all })).sort(byCount),
+  };
+
+  return { caps, total, grandTotal, page, perPage, facets };
+}
+
 /** One row per country the collection has caps from. */
 export type CountryTally = {
   /** ISO code, or null for caps whose country could not be placed */
